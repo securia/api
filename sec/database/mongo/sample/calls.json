@@ -1,0 +1,10 @@
+{
+  "user_id": ObjectId("56f91fc2b79064789e6d157f"),
+  "doctor_id": ObjectId("56f91fc2b79064789e6d157f"),
+  "comment": "",
+  "location": [12.83485, 17.32746],
+  "location_address": "Dhanakawadi",
+  "call_time": "YYYY-MM-DD HH:MM:SS",
+  "created_at": "",
+  "updated_at": ""
+}

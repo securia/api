@@ -1,0 +1,29 @@
+{
+    "token": "55ca2fbe25d8a20900f7de17",
+    "system_settings": {
+        "first_time_user": 15,
+        "fb_login_reward": 0,
+        "todays_puzzle_download": 0,
+        "archived_puzzle_download": 10,
+        "show_wrong": 2,
+        "ten_letter_blast": 1,
+        "reveal_word": 1,
+        "solving_puzzle": 0,
+        "solving_puzzle_under_ten": 0,
+        "solving_puzzle_under_twenty": 0,
+        "in_app_notification": true
+    },
+    "appsflyer_settings": {
+        "puzzle_solved": 0.09,
+        "d7_puzzle_solved": 0.09,
+        "open_unique": 0.14,
+        "d7_open_unique": 0.14
+    },
+    "loading_texts": [
+        "Play new puzzles daily at 10pm ET",
+        "If you’re stuck on a clue, try using hints!",
+        "Play 500+ more puzzles in the calendar",
+        "A fun theme for every day of the week",
+        "We NEVER post to Facebook on your behalf"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Sachin Shevate",
+  "position": "Regional Manager",
+  "contact_number": "1234567890",
+  "email": "sachin.shevate@gmail.com",
+  "password": "123456",
+  "type": "admin",
+  "is_active": true,
+  "is_deleted": false,
+  "last_located_at": [18.12345, 12.2346],
+  "last_located_address": "",
+  "last_login_at": 214284727347,
+  "last_used_at": 218734627472,
+  "created_at": "",
+  "updated_at": ""
+}

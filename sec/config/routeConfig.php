@@ -1,0 +1,19 @@
+<?php
+
+global $routeConfig;
+
+// APP APIs
+$routeConfig['api']['app']['1.0'] = array(
+    // Auth controller
+    'auth/login' => array('controller' => 'AuthController', 'function' => 'login', 'filters' => array(), 'method' => 'POST'),
+    'call/save' => array('controller' => 'CallController', 'function' => 'save', 'filters' => array(), 'method' => 'POST'),
+    'call/getMyCalls' => array('controller' => 'CallController', 'function' => 'getMyCalls', 'filters' => array(), 'method' => 'POST'),
+    );
+
+// ADMIN APIs
+$routeConfig['api']['admin']['1.0'] = array(
+    // Auth controller
+    'auth/login' => array('controller' => 'AuthController', 'function' => 'login', 'filters' => array(), 'method' => 'POST'),
+    'auth/logout' => array('controller' => 'AuthController', 'function' => 'logout', 'filters' => array(), 'method' => 'POST'),
+    'auth/forgotPassword' => array('controller' => 'AuthController', 'function' => 'forgotPassword', 'filters' => array(), 'method' => 'POST'),
+);

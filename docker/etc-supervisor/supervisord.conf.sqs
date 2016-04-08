@@ -1,0 +1,9 @@
+[supervisord]
+nodaemon=true
+[program:artisan]
+command=php artisan queue:listen --timeout=0
+directory=/opt/data/nginx/vhosts/apin.puzzlesocial.com
+stdout_logfile=/tmp/queue.log
+redirect_stderr=true
+autostart=true
+autorestart=true

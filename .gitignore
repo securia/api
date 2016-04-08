@@ -1,0 +1,7 @@
+/src/htdocs/temp/*
+/src/htdocs/hc.txt
+docker/etc-nginx/sites-enabled
+*~
+*.bak
+.idea
+/reports/*

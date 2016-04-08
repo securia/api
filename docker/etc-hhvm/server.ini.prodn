@@ -1,0 +1,65 @@
+hhvm.server.default_document = index.php
+hhvm.server.source_root = /opt/data/nginx/vhosts/apin.puzzlesocial.com
+hhvm.repo.authoritative=true
+hhvm.server.type = fastcgi
+;session.save_handler = files
+;session.save_path = /var/lib/php5
+;session.gc_maxlifetime = 1440
+memory_limit = 16M
+upload_max_filesize = 10M
+extension=mongo.so
+max_execution_time = 120
+default_socket_timeout = 120
+max_input_time = 120
+default_socket_timeout = 120
+request_terminate_timeout = 120
+
+; logging
+hhvm.log.level = None
+;hhvm.log.level = Verbose
+;hhvm.log.no_silencer = true
+;hhvm.log.always_log_unhandled_exceptions = true
+;hhvm.log.runtime_error_reporting_level = 32766
+;hhvm.log.use_log_file = true
+;hhvm.log.use_syslog = false
+;hhvm.log.injected_stack_trace = false
+;hhvm.log.native_stack_trace = false
+;hhvm.log.file = /var/log/hhvm/error.log
+;hhvm.debug.full_backtrace = true
+;hhvm.debug.server_stack_trace = true
+;hhvm.debug.server_error_message = true
+
+
+; perf files
+hhvm.keep_perf_pid_map = 0
+hhvm.perf_pid_map = 0
+hhvm.perf_data_map = 0
+
+; jit
+hhvm.jit = false
+;hhvm.eval.jit = true
+;hhvm.eval.jit_warmup_requests = 0
+;hhvm.jit_profile_interp_requests = 0
+;hhvm.jit_asize = 524288000
+;hhvm.jit_global_data_size = 524288000
+;hhvm.jit_acold_size = 524288000
+;hhvm.jit_afrozen_size = 524288000
+
+; error handling
+hhvm.error_handling.call_user_handler_on_fatals = true
+hhvm.error_handling.max_loop_count = 0
+hhvm.error_handling.no_infinite_recursion_detection = false
+hhvm.error_handling.throw_bad_type_exceptions = false
+hhvm.error_handling.throw_too_many_arguments = false
+hhvm.error_handling.warn_too_many_arguments = false
+hhvm.error_handling.throw_missing_arguments = false
+hhvm.error_handling.throw_invalid_arguments = false
+hhvm.error_handling.enable_hip_hop_errors = true
+hhvm.error_handling.notice_frequency = 1
+hhvm.error_handling.warning_frequency = 1
+hhvm.error_handling.assert_active = false
+hhvm.error_handling.assert_warning = false
+
+expose_php=0
+hhvm.server.thread_count = 2
+hhvm.server.connection_timeout_seconds = 120

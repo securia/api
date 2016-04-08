@@ -1,0 +1,16 @@
+[supervisord]
+nodaemon=true
+logfile=/var/log/supervisor/supervisord.log
+logfile_maxbytes=10485760
+logfile_backups=0
+childlogdir=/var/log/supervisor
+[program:sshd]
+command=/usr/sbin/sshd -D
+autostart=true
+[program:artisan]
+command=php artisan queue:listen --timeout=0
+directory=/opt/data/nginx/vhosts/apin.puzzlesocial.com
+stdout_logfile=/var/log/artisan/queue.log
+redirect_stderr=true
+autostart=true
+autorestart=true
