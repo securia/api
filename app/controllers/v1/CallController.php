@@ -36,7 +36,7 @@ class CallController extends \BaseController
             $rules = array(
                 'token' => 'required|alpha_num',
                 'doctor_id' => 'required|alpha_num',
-                'call_time' => 'required|alpha_num',
+                'call_time' => 'required',
                 'comment' => 'alpha_num',
                 'location.0' => 'required|numeric',
                 'location.1' => 'required|numeric'
@@ -68,6 +68,7 @@ class CallController extends \BaseController
 
 
             $tokenInfo = $tokenInfo['data'];
+            
             
             /**
              * Create doctor call
