@@ -131,4 +131,27 @@ class User extends \Jenssegers\Mongodb\Model
             die(exception($e));
         }
     }
+
+    public static function getMyDoctors($userId)
+    {
+        global $appConn;
+        try {
+            $db = $appConn['mongo']->collection('user_doctors');
+            $db->where('user_id', '=', $userId);
+            $data = $db->get(array('doctor_id'));
+
+            $doctorIds = array();
+            foreach($data as $doctor){
+                $doctorIds[] = $doctor['doctor_id'];
+            }
+
+            $db = $appConn['mongo']->collection('doctors');
+            $db->where('_id', '=', array('$in' =>$doctorIds));
+            $doctors = (array)$db->get();
+
+            return \ApplicationBase\Facades\Api::success(6010, $doctors, array('User(s) fetched'));
+        } catch (\Exception $e) {
+            die(exception($e));
+        }
+    }
 }

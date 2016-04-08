@@ -6581,5 +6581,6 @@ return array(
     'admin\\AuthController' => $baseDir . '/app/controllers/admin/AuthController.php',
     'v1\\AuthController' => $baseDir . '/app/controllers/v1/AuthController.php',
     'v1\\CallController' => $baseDir . '/app/controllers/v1/CallController.php',
+    'v1\\UserController' => $baseDir . '/app/controllers/v1/UserController.php',
     'v4\\S3Controller' => $baseDir . '/app/controllers/v1/S3Controller.php',
 );
