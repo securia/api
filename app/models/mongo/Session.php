@@ -98,7 +98,7 @@ class Session extends \Jenssegers\Mongodb\Model
             } else {
                 $data['created_at'] = LARAVEL_START;
                 $data['_id'] = new \MongoId();
-                $appConn['mongo_push'][] = array('collection' => 'sessions', 'action' => 'insert', 'insert' => $data);
+                $appConn['mongo_push'][] = array('collection' => 'sessions', 'action' => 'insert', 'insert' => $data, 'options' => array('new_id' => false));
             }
             return \ApplicationBase\Facades\Api::success(2030, $data, ['Session']);
         } catch (\Exception $e) {
