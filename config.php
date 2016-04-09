@@ -23,7 +23,7 @@ $globalConfig = array(
  * Common Configuration
  */
 $globalConfig['protocol'] = 'https://';
-$globalConfig['timezone'] = 'America/New_York';
+$globalConfig['timezone'] = 'Asia/Calcutta';
 
 date_default_timezone_set($globalConfig['timezone']);
 $globalConfig['api_security']['status'] = false;
