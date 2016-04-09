@@ -41,7 +41,7 @@ class AuthController extends \BaseController
                 return $inputs;
             }
             $inputs = $inputs['data'];
-            
+
             // Set Mongo Client
             if (false == valObj($appConn['mongo'], 'Jenssegers\Mongodb\Connection')) {
                 $appConn['mongo'] = \Illuminate\Support\Facades\DB::connection('mongodb');
@@ -52,7 +52,6 @@ class AuthController extends \BaseController
              */
             $conditions = array(
                 array('email', '=', $inputs['email']),
-                array('password', '=', $inputs['password']),
                 array('is_active', '=', true),
                 array('is_deleted', '=', false)
             );
@@ -64,6 +63,10 @@ class AuthController extends \BaseController
             $userInfo = $userInfo['data'];
             
             if(empty($userInfo)){
+                return \ApplicationBase\Facades\Api::error(1020, array(), array('email or password'));
+            }
+
+            if(!\Illuminate\Support\Facades\Hash::check($inputs['password'], $userInfo['password'])){
                 return \ApplicationBase\Facades\Api::error(1020, array(), array('email or password'));
             }
 
