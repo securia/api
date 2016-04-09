@@ -14,43 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 require __DIR__ . '/../config.php';
 
-
 //pattern to allow origins
 global $globalConfig;
 
-if ($globalConfig['apiEnv'] == 'prod') {
-    $allowedOriginPattern = $globalConfig['allowedOriginPatterns'];
-    $allowedOrigin = "";
-    if (!empty($_SERVER['HTTP_ORIGIN']) && !empty($globalConfig['allowedOriginPatterns'])) {
-        foreach ($globalConfig['allowedOriginPatterns'] as $allowedOriginPattern) {
-            if (preg_match($allowedOriginPattern, $_SERVER['HTTP_ORIGIN'])) {
-                $allowedOrigin = $_SERVER['HTTP_ORIGIN'];
-                header('Access-Control-Allow-Origin: ' . $allowedOrigin);
-                break;
-            }
-        }
-    }
-
-    if (empty($allowedOrigin)) {
-        die(
-        json_encode(
-            array(
-                'success' => false,
-                'message' => array(
-                    'id' => 403,
-                    'description' => 'Access Denied',
-                ),
-                'data' => array(),
-                'timestamp' => time(),
-                'version' => ''
-            )
-        )
-        );
-    }
-}else{
-    header('Access-Control-Allow-Origin: *');
-
-}
+header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 header('Access-Control-Allow-Headers: Content-Type, Content-Range, Content-Disposition, Content-Description');
 
