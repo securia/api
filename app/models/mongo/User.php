@@ -154,4 +154,71 @@ class User extends \Jenssegers\Mongodb\Model
             die(exception($e));
         }
     }
+
+    static function processGrid($inputs, $columns, $boolCSV = false)
+    {
+        try {
+
+            global $appConn, $appConfig;
+
+            $strQuery = $appConn['mongo']->collection('users');
+
+            $strQuery = processMongoGridInputs($strQuery, $columns, $inputs);
+
+            if (true == $boolCSV) {
+                return $strQuery;
+            }
+
+            $intTotalRecord = $strQuery->count();
+            $arrData = array();
+            if (0 < $intTotalRecord) {
+                (true == isset($inputs['per_page']) && is_numeric($inputs['per_page'])) ? $intPerPage = $inputs['per_page'] : $intPerPage = $appConfig['grid']['perPageDefaultValue'];
+                $skipRecords = ($inputs['page'] * $intPerPage) - $intPerPage;
+                $arrData = $strQuery->skip((int)$skipRecords)->take((int)$intPerPage)->get(array_keys($columns));
+            }
+
+            foreach($arrData as $key => $row){
+                $arrData[$key]['_id'] = $arrData[$key]['_id']->{'$id'};
+            }
+
+            $output['content'] = $arrData;
+            $output['page'] = $inputs['page'];
+            $output['page_page'] = $inputs['per_page'];
+            $output['total'] = $intTotalRecord;
+            return $output;
+        } catch (\Exception $e) {
+            die(exception($e));
+        }
+    }
+
+    /**
+     * Delete User Details
+     * @param array $wheres
+     * @param array $return
+     */
+    public static function deleteUser($wheres = array(array()))
+    {
+        global $appConn;
+        try {
+            $db = $appConn['mongo']->collection('users');
+
+            foreach ($wheres as $where) {
+                if (count($where) <= 1 || count($where) >= 4) {
+                    return \ApplicationBase\Facades\Api::error(1020, array(), array('where array passed'));
+                }
+                if (count($where) == 2) {
+                    $where[2] = $where[1];
+                    $where[1] = '=';
+                }
+                $db->where($where[0], $where[1], $where[2]);
+            }
+
+            $data = (array)$db->update(array('is_deleted' => true), array('multi' => true));
+
+            return \ApplicationBase\Facades\Api::success(6010, $data, array('User deleted'));
+        } catch (\Exception $e) {
+            die(exception($e));
+        }
+    }
 }
+

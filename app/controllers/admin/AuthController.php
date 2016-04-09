@@ -9,100 +9,92 @@ namespace admin;
 class AuthController extends \BaseController
 {
     /**
-     * @return string
+     * Generic login function for all platforms
      */
     public function login()
     {
-
+        global $appConn;
         try {
-            $defaultInputs = array(
-                'username' => null,
-                'password' => null,
-                'remember_me' => false
-            );
+            $rawInputs = \Illuminate\Support\Facades\Input::all();
+            if (empty($rawInputs)) {
+                $rawInputs = \Illuminate\Support\Facades\Input::json()->all();
+            }
 
-            //validation rule
+            /**
+             * Input Validations
+             */
+            $defaultInputs = [
+                'email' => null,
+                'password' => null
+            ];
+
             $rules = array(
-                'username' => 'required|min:2|max:50',
-                'password' => 'required|min:6|max:20',
+                'email' => 'required|email',
+                'password' => 'required|min:6'
             );
 
-            // Validate Input Parameters @var  $inputs
             $inputs = validateInput($defaultInputs, $rules);
-
-            //Check validate input function response if false then return
-            if (!isset($inputs['success']) || $inputs['success'] == false) {
-                return json_encode($inputs);
+            if (isset($inputs['success']) && $inputs['success'] === false) {
+                return $inputs;
             }
             $inputs = $inputs['data'];
 
-            //Get User Information from Mongo DB
-            $arrUser = \PSC\Models\Mongo\Admin::where('is_deleted', '<>', true)->orWhereNull('is_deleted')->where('username', strtolower($inputs['username']))->orWhere('email', strtolower($inputs['username']))->first();
-
-            //if user not found in mongo
-            if (false == valObj($arrUser, '\PSC\Models\Mongo\Admin')) {
-                return \ApplicationBase\Facades\Api::error(1020, [], [' Username or password']);
+            // Set Mongo Client
+            if (false == valObj($appConn['mongo'], 'Jenssegers\Mongodb\Connection')) {
+                $appConn['mongo'] = \Illuminate\Support\Facades\DB::connection('mongodb');
             }
 
-            //Compare Users Password with input password
-            if (\Illuminate\Support\Facades\Hash::check($inputs['password'], $arrUser['password']) == false) {
-                return \ApplicationBase\Facades\Api::error(1020, [], [' Username or password']);
+            /**
+             * get user details from email and password
+             */
+            $conditions = array(
+                array('email', '=', $inputs['email']),
+                array('type', '=', 'admin'),
+                array('is_active', '=', true),
+                array('is_deleted', '=', false)
+            );
+            $userInfo = \SEC\Models\Mongo\User::getUser($conditions);
+            if (empty($userInfo) || (isset($userInfo['success']) && $userInfo['success'] == false)) {
+                return $userInfo;
             }
 
-            $response = $this->storeUserLoginInfo($inputs, $arrUser);
+            $userInfo = $userInfo['data'];
 
-            return $response;
+            if(empty($userInfo)){
+                return \ApplicationBase\Facades\Api::error(1020, array(), array('email or password'));
+            }
 
+            if(!\Illuminate\Support\Facades\Hash::check($inputs['password'], $userInfo['password'])){
+                return \ApplicationBase\Facades\Api::error(1020, array(), array('email or password'));
+            }
+
+            /**
+             * Create session for user
+             */
+            $sessionInfo= array(
+                'user_id' => $userInfo['_id'],
+                'token_alive_untill' => 0
+            );
+            $sessionInfo = \SEC\Models\Mongo\Session::saveSession($sessionInfo);
+            if (empty($sessionInfo) || (isset($sessionInfo['success']) && $sessionInfo['success'] == false)) {
+                return $sessionInfo;
+            }
+            $sessionInfo = $sessionInfo['data'];
+
+            /**
+             * Commit Mongo Transactions
+             */
+            \SEC\Models\Mongo\Common::commitMongoTransactions();
+            $output = array(
+                'token' => $sessionInfo['_id']->{'$id'},
+                'name' => $userInfo['name'],
+                'email' => $userInfo['email'],
+            );
+            return \ApplicationBase\Facades\Api::success(2010, $output, array());
         } catch (\Exception $e) {
-            return exception($e);
+            die(exception($e));
         }
     }
-
-    /**
-     * @return string
-     */
-    public function logout()
-    {
-        try {
-
-            $defaultInputs = array(
-                'token' => null
-            );
-
-            //Set Validation Rules
-            $rules = array(
-                'token' => 'required'
-            );
-
-            //Validate Input Parameters @var  $inputs
-            $inputs = validateInput($defaultInputs, $rules);
-
-            //Check validate input function response if false then return
-            if (!isset($inputs['success']) || $inputs['success'] == false) {
-                return json_encode($inputs);
-            }
-            $inputs = $inputs['data'];
-
-            //get user by token
-            $arrUser = getAdminUserByToken($inputs['token'], true);
-
-            //Check status
-            if (valArr($arrUser)) {
-                //Set mongoDB connection
-                $status = \PSC\Models\Mongo\AdminSession::where('_id', '=', $arrUser['_id'])->delete();
-                //check status of object
-                if (!$status) {
-                    return \ApplicationBase\Facades\Api::error(1050, [], ['User logged out']);
-                }
-
-            }
-
-            return \ApplicationBase\Facades\Api::success(2020, $inputs['token'], ['Token']);
-        } catch (\Exception $e) {
-            return exception($e);
-        }
-    }
-
 
     /**
      * Function to send reset password link to user
@@ -182,96 +174,4 @@ class AuthController extends \BaseController
             return exception($e);
         }
     }
-
-    public function verifyToken()
-    {
-        try {
-            global $appConn;
-            $defaultInputs = array(
-                'token' => null
-            );
-
-            //Validation Rules @var  $rules
-            $rules = array(
-                'token' => 'required'
-            );
-
-            //Validate Input Parameters @var  $inputs
-            $inputs = validateInput($defaultInputs, $rules);
-
-            //Check validate input function response if false then return
-            if (!isset($inputs['success']) || $inputs['success'] == false) {
-                return json_encode($inputs);
-            }
-            $inputs = $inputs['data'];
-
-            // Set Mongo Client
-            if (false == valObj($appConn['mongo'], 'Jenssegers\Mongodb\Connection')) {
-                $appConn['mongo'] = \Illuminate\Support\Facades\DB::connection('mongodb');
-            }
-
-            //Fetch user from mongoDB
-            $objToken = \PSC\Models\Mongo\AdminSession::where('_id', $inputs['token'])->first();
-
-            if (false == valObj($objToken, 'PSC\Models\Mongo\AdminSession')) {
-                return \ApplicationBase\Facades\Api::error(1180, [], []);
-            }
-
-            return \ApplicationBase\Facades\Api::success(2070, [], ['User']);
-
-        } catch (\Exception $e) {
-            return exception($e);
-        }
-    }
-
-    /**
-     * @param array $inputs
-     * @param array $user
-     * @return mixed
-     */
-    public function storeUserLoginInfo($inputs = array(), $user = array())
-    {
-        try {
-            global $appConfig;
-            // Add user Token details into MONGO
-            $userToken['id'] = $user['id'];
-
-            $userToken['created_at'] = microtime(true);
-
-            // Saving remember me in mongo
-            if (!isset($inputs['remember_me']))
-                $inputs['remember_me'] = false;
-
-            $userToken['remember_me'] = $inputs['remember_me'];
-            $userToken['username'] = $user['username'];
-            $userToken['email'] = $user['email'];
-            $userToken['password'] = $user['password'];
-
-            //check remember_me is true or not
-            $userToken['expiry_time'] = ($inputs['remember_me']) ? strtotime($appConfig['user']['rememberMeExpiration']) : strtotime($appConfig['user']['normalExpiration']);
-
-            //Insert Users token and token_expire time in mongo db
-            $userToken['_id'] = new \MongoId();
-            $status = \PSC\Models\Mongo\AdminSession::insert($userToken);
-
-            //check status of object
-            if (!$status) {
-                return \ApplicationBase\Facades\Api::error(1050, [], ['User logged in']);
-            }
-            $intDisputeCount = \PSC\Models\Mongo\Dispute::where('is_resolved', false)->count();
-
-            $response['token'] = $userToken['_id']->{'$id'};
-            $response['id'] = $user['id'];
-            $response['username'] = $user['username'];
-            $response['email'] = $user['email'];
-            $response['disputes_count'] = $intDisputeCount;
-            $response['permissions'] = array();
-
-            return \ApplicationBase\Facades\Api::success(2010, $response, ['User']);
-
-        } catch (\Exception $e) {
-            return exception($e);
-        }
-    }
-
 }

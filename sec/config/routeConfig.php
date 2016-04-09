@@ -15,6 +15,9 @@ $routeConfig['api']['app']['1.0'] = array(
 $routeConfig['api']['admin']['1.0'] = array(
     // Auth controller
     'auth/login' => array('controller' => 'AuthController', 'function' => 'login', 'filters' => array(), 'method' => 'POST'),
-    'auth/logout' => array('controller' => 'AuthController', 'function' => 'logout', 'filters' => array(), 'method' => 'POST'),
-    'auth/forgotPassword' => array('controller' => 'AuthController', 'function' => 'forgotPassword', 'filters' => array(), 'method' => 'POST'),
+    'call/get' => array('controller' => 'CallController', 'function' => 'get', 'filters' => array(), 'method' => 'POST'),
+    'user/getAll' => array('controller' => 'UserController', 'function' => 'getAll', 'filters' => array(), 'method' => 'POST'),
+    'user/get' => array('controller' => 'UserController', 'function' => 'get', 'filters' => array(), 'method' => 'POST'),
+    'user/save' => array('controller' => 'UserController', 'function' => 'save', 'filters' => array(), 'method' => 'POST'),
+    'user/delete' => array('controller' => 'UserController', 'function' => 'delete', 'filters' => array(), 'method' => 'POST'),
 );

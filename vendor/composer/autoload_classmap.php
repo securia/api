@@ -6579,6 +6579,8 @@ return array(
     'Whoops\\Util\\Misc' => $vendorDir . '/filp/whoops/src/Whoops/Util/Misc.php',
     'Whoops\\Util\\TemplateHelper' => $vendorDir . '/filp/whoops/src/Whoops/Util/TemplateHelper.php',
     'admin\\AuthController' => $baseDir . '/app/controllers/admin/AuthController.php',
+    'admin\\CallController' => $baseDir . '/app/controllers/admin/CallController.php',
+    'admin\\UserController' => $baseDir . '/app/controllers/admin/UserController.php',
     'v1\\AuthController' => $baseDir . '/app/controllers/v1/AuthController.php',
     'v1\\CallController' => $baseDir . '/app/controllers/v1/CallController.php',
     'v1\\UserController' => $baseDir . '/app/controllers/v1/UserController.php',

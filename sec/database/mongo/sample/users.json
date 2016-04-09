@@ -4,7 +4,7 @@
   "position": "Regional Manager",
   "contact_number": "1234567890",
   "email": "sachin.shevate@securiapharma.com",
-  "password": "123456",
+  "password": "$2y$10$u0orfEmf8AzGbdXx3iJLLedM78GyUVfDANFTe77EMJoozUteaRvdK",
   "type": "admin",
   "is_active": true,
   "is_deleted": false,

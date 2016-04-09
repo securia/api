@@ -1,86 +1,14 @@
 <?php
 
-namespace v1;
+namespace admin;
 
 /**
- * Class UserController
+ * Class CallController
  * @package v1
  */
-class UserController extends \BaseController
+class CallController extends \BaseController
 {
-    /**
-     * Record doctor call in database
-     */
-    public function getMyDoctors()
-    {
-        global $appConn;
-        try {
-            $rawInputs = \Illuminate\Support\Facades\Input::all();
-            if (empty($rawInputs)) {
-                $rawInputs = \Illuminate\Support\Facades\Input::json()->all();
-            }
-
-            /**
-             * Input Validations
-             */
-            $defaultInputs = [
-                'token' => null
-            ];
-
-            $rules = array(
-                'token' => 'required|alpha_num'
-            );
-
-            $inputs = validateInput($defaultInputs, $rules);
-            if (isset($inputs['success']) && $inputs['success'] === false) {
-                return $inputs;
-            }
-            $inputs = $inputs['data'];
-            
-            // Set Mongo Client
-            if (false == valObj($appConn['mongo'], 'Jenssegers\Mongodb\Connection')) {
-                $appConn['mongo'] = \Illuminate\Support\Facades\DB::connection('mongodb');
-            }
-
-            /**
-             * get session details from token
-             */
-            try{
-                $inputs['token'] = new \MongoId($inputs['token']);
-            }catch (\Exception $e){
-                return \ApplicationBase\Facades\Api::error(5020, array(), array('token'));
-            }
-            $tokenInfo = getTokenInfo(array(array('_id', '=', $inputs['token'])));
-            if (empty($tokenInfo) || (isset($tokenInfo['success']) && $tokenInfo['success'] == false)) {
-                return $tokenInfo;
-            }
-
-            $tokenInfo = $tokenInfo['data'];
-
-            $doctorsInfo = \SEC\Models\Mongo\User::getMyDoctors($tokenInfo['user_id']);
-            if (empty($doctorsInfo) || (isset($doctorsInfo['success']) && $doctorsInfo['success'] == false)) {
-                return $doctorsInfo;
-            }
-            $doctorsInfo = $doctorsInfo['data'];
-
-            foreach($doctorsInfo as $key => $doctors){
-                $doctorsInfo[$key] = unsetKeys($doctorsInfo[$key], array('created_at', 'updated_at'));
-                $doctorsInfo[$key]['_id'] = $doctorsInfo[$key]['_id']->{'$id'};
-            }
-
-            $output = array(
-                'doctors' => $doctorsInfo
-            );
-            return \ApplicationBase\Facades\Api::success(2040, $output, array('Doctors'));
-        } catch (\Exception $e) {
-            die(exception($e));
-        }
-    }
-
-    /**
-     * Get my calls from database
-     */
-    public function getMyCalls()
+    public function get()
     {
         global $appConn;
         try {
@@ -94,6 +22,7 @@ class UserController extends \BaseController
              */
             $defaultInputs = [
                 'token' => null,
+                'user_id' => null,
                 'from_date' => (int)date('Ymd', time()),
                 'to_date' => (int)date('Ymd', time()),
                 'doctor_id' => null
@@ -101,6 +30,7 @@ class UserController extends \BaseController
 
             $rules = array(
                 'token' => 'required|alpha_num',
+                'doctor_id' => 'required|alpha_num',
                 'from_date' => 'required|numeric',
                 'to_date' => 'required|numeric',
                 'doctor_id' => 'alpha_num'
@@ -125,6 +55,7 @@ class UserController extends \BaseController
              */
             try{
                 $inputs['token'] = new \MongoId($inputs['token']);
+                $inputs['user_id'] = new \MongoId($inputs['user_id']);
             }catch (\Exception $e){
                 return \ApplicationBase\Facades\Api::error(5020, array(), array('token'));
             }
@@ -132,14 +63,13 @@ class UserController extends \BaseController
             if (empty($tokenInfo) || (isset($tokenInfo['success']) && $tokenInfo['success'] == false)) {
                 return $tokenInfo;
             }
-
             $tokenInfo = $tokenInfo['data'];
 
             /**
              * get doctor's calls between specified date range
              */
             $conditions = array(
-                array('user_id', '=', $tokenInfo['user_id']),
+                array('user_id', '=', $inputs['user_id']),
                 array('call_time', '=', array('$gte' => $inputs['from_date'], '$lte' => $inputs['to_date']))
             );
             if(!empty($inputs['doctor_id'])){
