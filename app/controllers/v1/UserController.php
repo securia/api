@@ -77,7 +77,7 @@ class UserController extends \BaseController
     }
 
     /**
-     * Record doctor call in database
+     * Get my calls from database
      */
     public function getMyCalls()
     {
@@ -93,15 +93,15 @@ class UserController extends \BaseController
              */
             $defaultInputs = [
                 'token' => null,
-                'from_date' => date('Ymd', time()),
-                'to_date' => date('Ymd', time()),
+                'from_date' => (int)date('Ymd', time()),
+                'to_date' => (int)date('Ymd', time()),
                 'doctor_id' => null
             ];
 
             $rules = array(
                 'token' => 'required|alpha_num',
-                'from_date' => 'required|alpha_num',
-                'to_date' => 'required|alpha_num',
+                'from_date' => 'required|numeric',
+                'to_date' => 'required|numeric',
                 'doctor_id' => 'alpha_num'
             );
 
@@ -139,7 +139,7 @@ class UserController extends \BaseController
              */
             $conditions = array(
                 array('user_id', '=', $tokenInfo['user_id']),
-                array('created_at', '=', array('$gte' => $inputs['from_date'], '$lte' => $inputs['to_date']))
+                array('call_time', '=', array('$gte' => $inputs['from_date'], '$lte' => $inputs['to_date']))
             );
             if(!empty($inputs['doctor_id'])){
                 try{
@@ -151,14 +151,43 @@ class UserController extends \BaseController
             }
 
             $callsInfo = \SEC\Models\Mongo\Call::getCalls($conditions);
+
             if (empty($callsInfo) || (isset($callsInfo['success']) && $callsInfo['success'] == false)) {
                 return $callsInfo;
             }
             $callsInfo = $callsInfo['data'];
 
-            return \ApplicationBase\Facades\Api::success(2110, array(), array('Call'));
+            $doctorIds = array();
+            foreach($callsInfo as $key => $call){
+                $doctorIds[] = $call['doctor_id'];
+            }
+
+            $doctorsInfo = $appConn['mongo']->collection('doctors')->where('_id', '=', array('$in' =>$doctorIds))->get();
+            foreach($doctorsInfo as $key => $doctor){
+                $doctorsInfo[$key]['_id'] = $doctorsInfo[$key]['_id']->{'$id'};
+                $doctorsInfo[$key] = unsetKeys($doctorsInfo[$key], array('created_at', 'updated_at'));
+            }
+            foreach($callsInfo as $key => $call){
+                foreach($doctorsInfo as $doctor){
+                    if($call['doctor_id'] == $doctor['_id']){
+                        $callsInfo[$key]['doctor'] = $doctor;
+                        unset($callsInfo[$key]['doctor_id']);
+                        break;
+                    }
+                }
+                $callsInfo[$key]['_id'] = $callsInfo[$key]['_id']->{'$id'};
+                $callsInfo[$key]['user_id'] = $callsInfo[$key]['user_id']->{'$id'};
+                $callsInfo[$key] = unsetKeys($callsInfo[$key], array('created_at', 'updated_at'));
+            }
+
+            $output = array(
+                'calls' => $callsInfo
+            );
+            return \ApplicationBase\Facades\Api::success(2040, $output, array('Calls'));
         } catch (\Exception $e) {
             die(exception($e));
         }
     }
+    
+    
 }

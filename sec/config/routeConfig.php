@@ -7,7 +7,7 @@ $routeConfig['api']['app']['1.0'] = array(
     // Auth controller
     'auth/login' => array('controller' => 'AuthController', 'function' => 'login', 'filters' => array(), 'method' => 'POST'),
     'call/save' => array('controller' => 'CallController', 'function' => 'save', 'filters' => array(), 'method' => 'POST'),
-    'call/getMyCalls' => array('controller' => 'CallController', 'function' => 'getMyCalls', 'filters' => array(), 'method' => 'POST'),
+    'user/getMyCalls' => array('controller' => 'UserController', 'function' => 'getMyCalls', 'filters' => array(), 'method' => 'POST'),
     'user/getMyDoctors' => array('controller' => 'UserController', 'function' => 'getMyDoctors', 'filters' => array(), 'method' => 'GET'),
     );
 
