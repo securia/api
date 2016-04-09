@@ -64,7 +64,8 @@ class UserController extends \BaseController
             $doctorsInfo = $doctorsInfo['data'];
 
             foreach($doctorsInfo as $key => $doctors){
-                $doctorsInfo[$key] = unsetKeys($doctorsInfo[$key], array('_id', 'created_at', 'updated_at'));
+                $doctorsInfo[$key] = unsetKeys($doctorsInfo[$key], array('created_at', 'updated_at'));
+                $doctorsInfo[$key]['_id'] = $doctorsInfo[$key]['_id']->{'$id'};
             }
 
             $output = array(
