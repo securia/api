@@ -189,4 +189,104 @@ class UserController extends \BaseController
             die(exception($e));
         }
     }
+
+    /**
+     * Change password of user
+     */
+    public function changePassword()
+    {
+        global $appConn;
+        try {
+            $rawInputs = \Illuminate\Support\Facades\Input::all();
+            if (empty($rawInputs)) {
+                $rawInputs = \Illuminate\Support\Facades\Input::json()->all();
+            }
+
+            /**
+             * Input Validations
+             */
+            $defaultInputs = [
+                'token' => null,
+                'old_password' => null,
+                'new_password' => null
+            ];
+
+            $rules = array(
+                'token' => 'required|alpha_num',
+                'old_password' => 'required|min:6',
+                'new_password' => 'required|min:6'
+            );
+
+            $inputs = validateInput($defaultInputs, $rules);
+            if (isset($inputs['success']) && $inputs['success'] === false) {
+                return $inputs;
+            }
+            $inputs = $inputs['data'];
+
+            // Set Mongo Client
+            if (false == valObj($appConn['mongo'], 'Jenssegers\Mongodb\Connection')) {
+                $appConn['mongo'] = \Illuminate\Support\Facades\DB::connection('mongodb');
+            }
+
+            /**
+             * get session details from token
+             */
+            try{
+                $inputs['token'] = new \MongoId($inputs['token']);
+            }catch (\Exception $e){
+                return \ApplicationBase\Facades\Api::error(5020, array(), array('token'));
+            }
+            $tokenInfo = getTokenInfo(array(array('_id', '=', $inputs['token'])));
+            if (empty($tokenInfo) || (isset($tokenInfo['success']) && $tokenInfo['success'] == false)) {
+                return $tokenInfo;
+            }
+
+            $tokenInfo = $tokenInfo['data'];
+
+            /**
+             * get user details from email and password
+             */
+            $conditions = array(
+                array('_id', '=', $tokenInfo['user_id']),
+                array('is_active', '=', true),
+                array('is_deleted', '=', false)
+            );
+            $userInfo = \SEC\Models\Mongo\User::getUser($conditions);
+            if (empty($userInfo) || (isset($userInfo['success']) && $userInfo['success'] == false)) {
+                return $userInfo;
+            }
+
+            $userInfo = $userInfo['data'];
+
+            if(empty($userInfo)){
+                return \ApplicationBase\Facades\Api::error(5040, array(), array('User'));
+            }
+
+            if(!\Illuminate\Support\Facades\Hash::check($inputs['old_password'], $userInfo['password'])){
+                return \ApplicationBase\Facades\Api::error(1020, array(), array('old password'));
+            }
+
+            /**
+             * Update user location and last login time
+             */
+            $userDetails= array(
+                'user_id' => $userInfo['_id'],
+                'password' => \Illuminate\Support\Facades\Hash::make($inputs['new_password'])
+            );
+            $userInfo = \SEC\Models\Mongo\User::saveUser($userDetails);
+            if (empty($userInfo) || (isset($userInfo['success']) && $userInfo['success'] == false)) {
+                return $userInfo;
+            }
+            $userInfo = $userInfo['data'];
+
+            /**
+             * Commit Mongo Transactions
+             */
+            \SEC\Models\Mongo\Common::commitMongoTransactions();
+
+            return \ApplicationBase\Facades\Api::success(2050, array(), array('Password'));
+        } catch (\Exception $e) {
+            die(exception($e));
+        }
+    }
 }

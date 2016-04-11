@@ -9,6 +9,7 @@ $routeConfig['api']['app']['1.0'] = array(
     'call/save' => array('controller' => 'CallController', 'function' => 'save', 'filters' => array(), 'method' => 'POST'),
     'user/getMyCalls' => array('controller' => 'UserController', 'function' => 'getMyCalls', 'filters' => array(), 'method' => 'POST'),
     'user/getMyDoctors' => array('controller' => 'UserController', 'function' => 'getMyDoctors', 'filters' => array(), 'method' => 'GET'),
+    'user/changePassword' => array('controller' => 'UserController', 'function' => 'changePassword', 'filters' => array(), 'method' => 'POST'),
     );
 
 // ADMIN APIs
