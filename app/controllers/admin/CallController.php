@@ -201,7 +201,8 @@ class CallController extends \BaseController
             }
 
             $usersById= array();
-            $userInfo = $appConn['mongo']->collection('users')->where('_id', '=', array('$in' =>$userIds))->get(array('name'));
+            $userInfo = $appConn['mongo']->collection('users')->where('_id', '=', array('$in' =>$userIds))->orderBy('created_at', -1)->get(array('name'));
+
             foreach($userInfo as $key => $user){
                 $user['_id'] = $user['_id']->{'$id'};
                 $usersById[$user['_id']] = $user;
