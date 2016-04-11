@@ -22,7 +22,7 @@ $globalConfig = array(
 /**
  * Common Configuration
  */
-$globalConfig['protocol'] = 'https://';
+$globalConfig['protocol'] = 'http://';
 $globalConfig['timezone'] = 'Asia/Calcutta';
 
 date_default_timezone_set($globalConfig['timezone']);
@@ -43,7 +43,7 @@ $globalConfig['domain'] = 'securiapharma.com';
 
 if ('prod' == $globalConfig['apiEnv']) {
     $globalConfig['allowedOriginPatterns'][] = '/^(?:.+\.)?securiapharma\.com/';
-    $globalConfig['apiUrl'] = $globalConfig['protocol'] . 'apin.' . $globalConfig['domain'] . '/';
+    $globalConfig['apiUrl'] = $globalConfig['protocol'] . 'api.' . $globalConfig['domain'] . '/';
     $globalConfig['configUrl'] = $globalConfig['protocol'] . 'config.' . $globalConfig['domain'] . '/config.json';
     $globalConfig['appUrl'] = $globalConfig['protocol'] . 'app.' . $globalConfig['domain'] . '/';
     $globalConfig['farmUrl'] = 'api-farm.' . $globalConfig['domain'] . '.';
