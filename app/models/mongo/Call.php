@@ -39,7 +39,7 @@ class Call extends \Jenssegers\Mongodb\Model
                 $db->where($where[0], $where[1], $where[2]);
             }
 
-            $data = (array)$db->get($return);
+            $data = (array)$db->orderBy('created_at', -1)->get($return);
             return \ApplicationBase\Facades\Api::success(6010, $data, array('Call(s) fetched'));
         } catch (\Exception $e) {
             die(exception($e));
