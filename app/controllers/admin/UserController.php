@@ -214,14 +214,16 @@ class UserController extends \BaseController
             }
             $tokenInfo = $tokenInfo['data'];
 
-            $conditions = array(
-                array('email', '=', $inputs['email']),
-                array('is_active', '=', true),
-                array('is_deleted', '=', false)
-            );
-            $userInfo = \SEC\Models\Mongo\User::getUser($conditions);
-            if (!empty($userInfo['data'])) {
-                return \ApplicationBase\Facades\Api::error(1090, array(), array('User'));
+            if(empty($inputs['user_id'])) {
+                $conditions = array(
+                    array('email', '=', $inputs['email']),
+                    array('is_active', '=', true),
+                    array('is_deleted', '=', false)
+                );
+                $userInfo = \SEC\Models\Mongo\User::getUser($conditions);
+                if (!empty($userInfo['data'])) {
+                    return \ApplicationBase\Facades\Api::error(1090, array(), array('User'));
+                }
             }
 
             $data = array(
