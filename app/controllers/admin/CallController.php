@@ -210,7 +210,7 @@ class CallController extends \BaseController
             }
             foreach($callsInfo as $key => $call){
                 $callsInfo[$key]['user_id'] = $callsInfo[$key]['_id']->{'$id'};
-                $callsInfo[$key]['user_name'] = isset($usersById[$callsInfo[$key]['user_id']->{'$id'}]) ? $usersById[$callsInfo[$key]['user_id']->{'$id'}]['name'] : '-';
+                $callsInfo[$key]['user_name'] = isset($usersById[$callsInfo[$key]['user_id']]) ? $usersById[$callsInfo[$key]['user_id']]['name'] : '-';
                 $callsInfo[$key] = unsetKeys($callsInfo[$key], array('updated_at'));
             }
 
