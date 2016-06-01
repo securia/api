@@ -13,6 +13,7 @@ class UserController extends \BaseController
         'position' => array('display_name' => 'Position', 'db_name' => 'position', 'data_type' => 'string', 'show' => true, 'sort' => true, 'search' => true),
         'contact_number' => array('display_name' => 'Contact Number', 'db_name' => 'contact_number', 'data_type' => 'string', 'show' => true, 'sort' => false, 'search' => true),
         'email' => array('display_name' => 'Email', 'db_name' => 'email', 'data_type' => 'string', 'show' => true, 'sort' => false, 'search' => true),
+        'type' => array('display_name' => 'Type', 'db_name' => 'type', 'data_type' => 'string', 'show' => true, 'sort' => true, 'search' => true),
         'is_active' => array('display_name' => 'Active', 'db_name' => 'is_active', 'data_type' => 'boolean', 'show' => true, 'sort' => true, 'search' => false),
         'is_deleted' => array('display_name' => 'Deleted', 'db_name' => 'is_deleted', 'data_type' => 'boolean', 'show' => true, 'sort' => true, 'search' => false),
         'last_located_at' => array('display_name' => 'Last Location', 'db_name' => 'last_located_at', 'data_type' => 'string', 'show' => true, 'sort' => false, 'search' => false),
