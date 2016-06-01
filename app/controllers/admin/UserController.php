@@ -79,7 +79,7 @@ class UserController extends \BaseController
             }
             $output = \SEC\Models\Mongo\User::processGrid($inputs, $this->mongoColumns);
             foreach($output['content'] as $key => $user){
-                $output['content'][$key]['user_id'] = $user['_id']->{'$id'};
+                $output['content'][$key]['user_id'] = $user['_id'];
                 unset($output['content'][$key]['_id']);
             }
 
