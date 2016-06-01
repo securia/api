@@ -78,6 +78,10 @@ class UserController extends \BaseController
                 );
             }
             $output = \SEC\Models\Mongo\User::processGrid($inputs, $this->mongoColumns);
+            foreach($output['content'] as $key => $user){
+                $output['content'][$key]['user_id'] = $user['_id'];
+                unset($output['content'][$key]['_id']);
+            }
 
             return \ApplicationBase\Facades\Api::success(2040, $output, ['Users']);
         } catch (\Exception $e) {
@@ -151,6 +155,8 @@ class UserController extends \BaseController
         global $appConn;
         try {
 
+            $rawInputs = \Illuminate\Support\Facades\Input::json()->all();
+
             $defaultInputs = array(
                 'token' => null,
                 'user_id' => null,
@@ -172,6 +178,10 @@ class UserController extends \BaseController
                 'password' => 'required|min:6',
                 'type' => 'required|in:admin,employee',
             );
+
+            if(!empty($rawInputs['user_id'])){
+                $rules['password'] = 'min:6';
+            }
 
             //Process input and apply validation
             $inputs = validateInput($defaultInputs, $rules, true);
@@ -228,6 +238,10 @@ class UserController extends \BaseController
                 'last_located_address' => null,
                 'last_login_at' => null
             );
+
+            if(!empty($inputs['user_id'])){
+                unset($data['password']);
+            }
 
             $userInfo = \SEC\Models\Mongo\User::saveUser($data);
             if (empty($userInfo) || (isset($userInfo['success']) && $userInfo['success'] == false)) {
