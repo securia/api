@@ -239,7 +239,7 @@ class UserController extends \BaseController
                 'last_login_at' => null
             );
 
-            if(!empty($inputs['user_id'])){
+            if(empty($inputs['user_id'])){
                 unset($data['password']);
             }
 
