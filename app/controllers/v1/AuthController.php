@@ -92,11 +92,12 @@ class AuthController extends \BaseController
                 'last_login_at' => LARAVEL_START,
                 'last_used_at' => LARAVEL_START
             );
-            $userInfo = \SEC\Models\Mongo\User::saveUser($userDetails);
-            if (empty($userInfo) || (isset($userInfo['success']) && $userInfo['success'] == false)) {
-                return $userInfo;
+            $userInfo1 = \SEC\Models\Mongo\User::saveUser($userDetails);
+            if (empty($userInfo1) || (isset($userInfo1['success']) && $userInfo1['success'] == false)) {
+                return $userInfo1;
             }
-            $userInfo = $userInfo['data'];
+            $userInfo1 = $userInfo1['data'];
+            $userInfo = array_merge_recursive_ex($userInfo, $userInfo1);
 
             /**
              * Commit Mongo Transactions
