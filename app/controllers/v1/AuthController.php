@@ -102,7 +102,7 @@ class AuthController extends \BaseController
              * Commit Mongo Transactions
              */
             \SEC\Models\Mongo\Common::commitMongoTransactions();
-            $output = array('token' => $sessionInfo['_id']->{'$id'});
+            $output = array('token' => $sessionInfo['_id']->{'$id'}, 'type' => $userInfo['type'], 'name' => $userInfo['name']);
             return \ApplicationBase\Facades\Api::success(2010, $output, array());
         } catch (\Exception $e) {
             die(exception($e));
